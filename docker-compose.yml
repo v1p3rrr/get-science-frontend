@@ -1,0 +1,15 @@
+version: '3'
+services:
+  react-app:
+    image: nginx:alpine
+    container_name: react_app_container
+    ports:
+      - "80:80"
+    volumes:
+      - ./build:/usr/share/nginx/html
+    networks:
+      - react-network
+
+networks:
+  react-network:
+    driver: bridge

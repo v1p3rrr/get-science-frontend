@@ -42,13 +42,29 @@ const OrganizerApplications: React.FC = () => {
         }
     };
 
-    const handleFileDownload = async (applicationId: number, fileId: number, isEncrypted: boolean) => {
+    const handleFileDownload = async (applicationId: number, fileId: number, fileName: string, isEncrypted: boolean) => {
         try {
-            await fetchFileAPI(applicationId, fileId, isEncrypted);
+            const result = await fetchFileAPI(applicationId, fileId, fileName, isEncrypted);
+            if (isEncrypted) {
+                const { blob, downloadedFileName } = result;
+                if (blob && downloadedFileName) {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', downloadedFileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } else {
+                const { link } = result;
+                window.open(link, '_blank');
+            }
         } catch (error) {
-            alert(t('failed_to_download_file'));
+            alert('Failed to download file');
         }
     };
+
 
     return (
         <div className="page-container">
@@ -58,7 +74,7 @@ const OrganizerApplications: React.FC = () => {
                     {applications.map(application => (
                         <div key={application.applicationId} className="application-card">
                             <div className="application-header">
-                                <strong>{t('event')}: {application.eventId}</strong>
+                                <strong>{t('event')}: {application.eventName}</strong>
                                 <span>{application.status}</span>
                             </div>
                             <p><strong>{t('submission_date')}: </strong>{new Date(application.submissionDate).toLocaleDateString()}</p>
@@ -87,7 +103,7 @@ const OrganizerApplications: React.FC = () => {
                                         <li key={file.fileId}>
                                             <text
                                                 className="file-link"
-                                                onClick={() => handleFileDownload(application.applicationId, file.fileId, file.isEncryptionEnabled)}>
+                                                onClick={() => handleFileDownload(application.applicationId, file.fileId, file.fileName, file.isEncryptionEnabled)}>
                                                 {file.fileName}
                                             </text>
                                         </li>

@@ -76,10 +76,9 @@ const EventDetails: React.FC = () => {
                         ))}
                     </ul>
                     <p>{event.description}</p>
-                    <button onClick={handleApply} className="apply-button">{t('do_apply')}</button>
-                    {/*todo*//*{roles.includes('USER') && (*/}
-                    {/*    <button onClick={handleApply} className="apply-button">{t('do_apply')}</button>*/}
-                    {/*)}*/}
+                    {roles.includes('USER') && (
+                        <button onClick={handleApply} className="apply-button">{t('do_apply')}</button>
+                    )}
                 </div>
 
                 {recommendations.length > 0 && (

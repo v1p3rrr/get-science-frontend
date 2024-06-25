@@ -91,7 +91,7 @@ export const updateApplicationAPI = async (applicationId: number, applicationReq
     }
 };
 
-export const fetchFileAPI = async (applicationId: number, fileId: number, isEncrypted: boolean) => {
+export const fetchFileAPI = async (applicationId: number, fileId: number, fileName: string, isEncrypted: boolean) => {
     const token = getToken();
     const endpoint = isEncrypted
         ? `${FILE_API_URL}/${applicationId}/files/${fileId}`
@@ -102,19 +102,27 @@ export const fetchFileAPI = async (applicationId: number, fileId: number, isEncr
             headers: {
                 'Authorization': `Bearer ${token}`
             },
-            responseType: 'blob'
+            responseType: isEncrypted ? 'blob' : 'text'
         });
 
-        const contentDisposition = response.headers['content-disposition'];
-        let fileName = 'file';
-        if (contentDisposition) {
-            const match = contentDisposition.match(/filename="?(.+)"?/);
-            if (match && match[1]) {
-                fileName = match[1];
+        if (isEncrypted) {
+            const contentDisposition = response.headers['content-disposition'];
+            let downloadedFileName = fileName;
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="?(.+)"?/);
+                if (match && match[1]) {
+                    downloadedFileName = match[1];
+                }
             }
-        }
 
-        saveAs(response.data, fileName);
+            return {
+                blob: response.data,
+                downloadedFileName
+            };
+        } else {
+            return { link: response.data }; // return the direct link
+        }
+        // saveAs(response.data, fileName);
     } catch (error) {
         throw new Error('Failed to download file');
     }

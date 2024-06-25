@@ -11,7 +11,7 @@ interface FileLinkProps {
 const FileLink: React.FC<FileLinkProps> = ({ applicationId, fileId, fileName, isEncrypted }) => {
     const handleDownload = async () => {
         try {
-            await fetchFileAPI(applicationId, fileId, isEncrypted);
+            await fetchFileAPI(applicationId, fileId, fileName, isEncrypted);
         } catch (error) {
             alert('Failed to download file');
         }

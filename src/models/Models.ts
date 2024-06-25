@@ -107,6 +107,7 @@ export interface ApplicationRequest {
 export interface ApplicationResponse {
     applicationId: number;
     eventId: number;
+    eventName: string;
     profileId: number | null;
     status: string;
     submissionDate: string;
