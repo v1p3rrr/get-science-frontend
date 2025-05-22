@@ -1,0 +1,608 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+
+footer {
+    background-color: #f1f1f1;
+    color: #888;
+    text-align: center;
+    padding: 1em 0;
+    position: static;
+    width: 100%;
+    bottom: 0;
+    flex-shrink: 0;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+.app-container {
+    display: flex;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #f4f4f4;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+
+.main-content {
+    flex: 1;
+    margin-left: 220px;
+    padding: 20px;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 80vh;
+}
+
+.content-wrap {
+    flex: 1;
+}
+
+.not-found {
+    text-align: center;
+}
+
+.not-found h2 {
+    font-size: 2em;
+    margin: 20px 0;
+}
+
+.not-found p {
+    margin: 10px 0;
+}
+
+.not-found a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.filter-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-bar input,
+.filter-bar select {
+    padding: 10px;
+    margin-right: 10px;
+    width: 200px;
+}
+
+.filter-bar input[type="text"] {
+    width: 400px;
+}
+
+.filter-bar button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.filter-bar button:hover {
+    background-color: #45a049;
+}
+
+
+.event-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+}
+
+.event-card-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.event-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.event-card:hover {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+.event-card .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event-card .event-header h3 {
+    margin: 0;
+}
+
+.event-card .event-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.event-card .event-info div {
+    flex: 1;
+}
+
+.event-card .event-info p {
+    margin: 5px 0;
+}
+
+.event-card .event-description {
+    margin-top: 10px;
+}
+
+.event-card .event-status {
+    color: green;
+    font-weight: bold;
+    text-align: right;
+}
+
+.event-card .event-location,
+.event-card .event-dates {
+    color: #555;
+    font-size: 0.9em;
+}
+
+.event-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.event-card a:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    flex-direction: column;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.create-event-btn {
+    display: block;
+    margin: 20px auto;
+    width: 200px;
+}
+
+.documents-section {
+    margin-top: 20px;
+}
+
+.documents-section button {
+    margin-top: 10px;
+}
+
+.description-textarea {
+    width: 100%;
+    height: 100px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+label {
+    font-weight: bold;
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    margin: 0 auto;
+}
+
+.application-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.application-form div {
+    display: flex;
+    flex-direction: column;
+}
+
+.application-form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.application-form input[type="text"],
+.application-form textarea,
+.application-form input[type="file"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.application-form textarea.message-textarea {
+    height: 100px;
+}
+
+.application-form .checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.application-form .checkbox-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.application-form .checkbox-container label {
+    margin: 0;
+}
+
+.application-form .submit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.application-form .submit-button:hover {
+    background-color: #45a049;
+}
+
+.file-input-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.event-form {
+    width: 500px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.event-form div {
+    margin-bottom: 20px;
+}
+
+.event-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.event-form input[type="text"],
+.event-form input[type="date"],
+.event-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.description-textarea {
+    width: 100%;
+    height: 100px;
+}
+
+.document-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.doc-input {
+    font-size: 0.8rem;
+    padding: 5px;
+    width: calc(33.33% - 20px);
+}
+
+.remove-button {
+    background-color: #ff4d4d;
+    width: auto;
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 0.8rem;
+}
+
+.remove-button:hover {
+    background-color: #ff1a1a;
+}
+
+.event-form button[type="submit"],
+.event-form button[type="button"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.event-form button[type="submit"]:hover,
+.event-form button[type="button"]:hover {
+    background-color: #45a049;
+}
+
+.sidebar ul li a, .sidebar ul li button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar ul li a:hover, .sidebar ul li button:hover {
+    background-color: #00ff99;
+    color: #fff;
+}
+
+.sidebar .language-switch {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .language-switch button {
+    background: none;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.logout-button-container {
+    padding: 10px;
+}
+
+.language-switch button:hover {
+    background-color: #00ff77;
+    color: #fff;
+}
+
+.filter-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter-bar input[type="text"] {
+    width: 400px;
+}
+
+.filter-bar select, .filter-bar button {
+    width: 200px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.checkbox-container label {
+    white-space: nowrap;
+}
+
+.apply-button {
+    display: block;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 400px;
+}
+
+.apply-button:hover {
+    background-color: #45a049;
+}
+
+.recommendations {
+    margin-top: 40px;
+}
+
+.recommendations-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+}
+
+.recommendations-list .event-card {
+    flex: 0 0 auto;
+    width: 350px;
+}
+
+.application-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.application-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.application-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.application-info {
+    margin-bottom: 10px;
+}
+
+.application-status {
+    font-weight: bold;
+    color: #666;
+}
+
+.delete-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.delete-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 40%;
+    text-align: center;
+}
+
+.delete-button:hover {
+    background-color: #218838;
+}
+
+.file-link {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.file-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

@@ -1,0 +1,58 @@
+name: CI/CD - Build, Push, and Deploy (Frontend)
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKERHUB_LOGIN }}/get-science-frontend:latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_LOGIN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile -t ${{ secrets.DOCKER_IMAGE_NAME }}
+
+      - name: Push image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_IMAGE_NAME }}
+
+      - name: Deploy to production server over SSH
+        if: github.event_name == 'push'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          script: |
+            cd /get-science/get-science-frontend
+
+            git fetch origin
+            git checkout master || git checkout -b master
+            git reset --hard origin/master
+
+            echo "Stopping old frontend container..."
+            docker compose -f docker-compose.yml down
+
+            echo "Removing old image..."
+            docker rmi -f ${{ secrets.DOCKER_IMAGE_NAME }} || true
+
+            echo "Pulling latest image..."
+            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
+
+            echo "Starting new frontend container..."
+            docker compose -f docker-compose.yml up -d --remove-orphans
