@@ -3,8 +3,9 @@ import SockJS from 'sockjs-client';
 import { getToken, getUsername } from './auth'; // Используем getUsername
 import { ChatMessageResponse, ChatMessageRequest } from '../models/Models'; // Обновленный импорт
 
-const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8080/ws/chat';
-// const WEBSOCKET_URL = 'ws://localhost:8080/ws/chat'; // Hardcoded for simplicity if .env is not set up
+const protocol = window.location.protocol === 'https:' ? 'https' : 'http';
+const host = window.location.host;
+const WEBSOCKET_URL = `${protocol}://${host}/ws/chat`;
 
 class WebSocketService {
   private client: Client | null = null;
@@ -24,7 +25,7 @@ class WebSocketService {
   private createClient(): Client {
     console.log('[WS createClient] Creating new STOMP client instance.');
     return new Client({
-      webSocketFactory: () => new SockJS(WEBSOCKET_URL.replace('ws:', 'http:').replace('wss:', 'https:')),
+        webSocketFactory: () => new SockJS('/ws/chat'),
       // Используем http/https для SockJS, он сам проапгрейдит до ws/wss
       // brokerURL: WEBSOCKET_URL, // If native WebSocket
       connectHeaders: {

@@ -42,7 +42,7 @@ import axiosInstance from '../../../util/axiosInstance';
 // Добавляю компонент LoadingOverlay для отображения индикатора загрузки
 const LoadingOverlay = ({ loading }: { loading: boolean }) => {
   if (!loading) return null;
-  
+
   return (
     <Backdrop
       sx={{
@@ -144,7 +144,7 @@ const EventForm: React.FC<EventFormProps> = ({
     fileType: FileType;
     description: string;
     mandatory: boolean;
-  }>>([]);
+  }>>(initialDocumentsRequired?.length ? initialDocumentsRequired : []);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [wasSubmitted, setWasSubmitted] = useState(false);
   const [showFillAllFieldsError, setShowFillAllFieldsError] = useState(false);
@@ -191,7 +191,7 @@ const EventForm: React.FC<EventFormProps> = ({
           return;
         }
         setter(value);
-        
+
         // Если меняется дата окончания мероприятия, проверяем валидность дат приёма заявок
         if (setter === setDateEnd) {
           if (applicationStart && applicationStart > value) {
@@ -205,7 +205,7 @@ const EventForm: React.FC<EventFormProps> = ({
         setter(null);
       }
     };
-    
+
   // Функция для сброса значения даты
   const handleClearDate = (setter: (date: Date | null) => void) => () => {
     setter(null);
@@ -280,14 +280,16 @@ const EventForm: React.FC<EventFormProps> = ({
       hasError = true;
     }
 
-    for (let i = 0; i < documentsRequired.length; i++) {
-      const doc = documentsRequired[i];
-      if (
-        !doc.type.trim() ||
-        !doc.fileType ||
-        !doc.description.trim()
-      ) {
-        hasError = true;
+    if (documentsRequired.length > 0) {
+      for (let i = 0; i < documentsRequired.length; i++) {
+        const doc = documentsRequired[i];
+        if (
+            !doc.type.trim() ||
+            !doc.fileType ||
+            !doc.description.trim()
+        ) {
+          hasError = true;
+        }
       }
     }
 
@@ -314,7 +316,7 @@ const EventForm: React.FC<EventFormProps> = ({
     // Подготовка данных для отправки на сервер
     const filesToUpload: File[] = [];
     const fileEventRequestList: FileEventRequest[] = [];
-    
+
     // Собираем файлы и их метаданные в одинаковом порядке
     materials.forEach(mat => {
       if (mat.file) {
@@ -372,10 +374,10 @@ const EventForm: React.FC<EventFormProps> = ({
       reviewers,
       coowners
     };
-    
+
     try {
       let eventId: number | string;
-      
+
       if ((mode === 'edit' || mode === 'edit_coowner') && (initialData as any)?.eventId) {
         eventId = (initialData as any).eventId;
         await updateEventAPI(eventId as number, payloadForApi, filesToUpload, fileEventRequestList);
@@ -385,14 +387,14 @@ const EventForm: React.FC<EventFormProps> = ({
       } else {
         eventId = await createEventAPI(payloadForApi, filesToUpload, fileEventRequestList);
       }
-      
+
       onSave(payloadForApi);
-      
+
       // После успешного сохранения, навигация зависит от режима
       if (mode === 'moderate') {
         navigate(-1); // Возвращаемся на предыдущую страницу (список модерации)
       } else {
-        navigate(`/events/${eventId}`); // Переходим на страницу просмотра ивента для других режимов
+        navigate(eventId ? `/events/${eventId}` : `/my-events/`); // Переходим на страницу просмотра ивента для других режимов
       }
     } catch (error) {
       alert(t('error_creating_event'));
@@ -430,7 +432,7 @@ const EventForm: React.FC<EventFormProps> = ({
     setAddressLoading(true);
     try {
       const response = await axiosInstance.get(`/address/suggest`, {
-        params: { query } 
+        params: { query }
       });
       setAddressOptions(response.data.map((item: any) => item.label || ''));
     } catch (error) {
@@ -528,7 +530,7 @@ const EventForm: React.FC<EventFormProps> = ({
   const handleExportParticipants = async () => {
     const eventId = (initialData as any)?.eventId;
     if (!eventId) return;
-    
+
     try {
       const url = await exportEventParticipantsToExcel(eventId);
       // Создаем ссылку для скачивания файла
@@ -547,15 +549,15 @@ const EventForm: React.FC<EventFormProps> = ({
   // Функция для обрезки имени файла посередине
   const truncateFilename = (filename: string, maxLength: number = 25): string => {
     if (!filename || filename.length <= maxLength) return filename;
-    
+
     const extension = filename.includes('.') ? filename.split('.').pop() : '';
     const nameWithoutExt = filename.includes('.') ? filename.substring(0, filename.lastIndexOf('.')) : filename;
-    
+
     const halfLength = Math.floor((maxLength - 3) / 2);
     const start = nameWithoutExt.substring(0, halfLength);
     const end = nameWithoutExt.substring(nameWithoutExt.length - halfLength);
-    
-    return extension 
+
+    return extension
       ? `${start}...${end}.${extension}`
       : `${start}...${end}`;
   };
@@ -572,7 +574,7 @@ const EventForm: React.FC<EventFormProps> = ({
             <Box component="form" onSubmit={handleSubmit} noValidate>
               <Grid container direction="column" alignItems="center" spacing={2}>
                 <Grid item xs={12} sx={{ width: '100%' }} component="div">
-                  <TextField 
+                  <TextField
                     label={t('title')}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -584,7 +586,7 @@ const EventForm: React.FC<EventFormProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} sx={{ width: '100%' }}>
-                  <TextField 
+                  <TextField
                     label={t('description')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -598,7 +600,7 @@ const EventForm: React.FC<EventFormProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} sx={{ width: '100%' }}>
-                  <TextField 
+                  <TextField
                     label={t('organizer_description')}
                     value={organizerDescription}
                     onChange={(e) => setOrganizerDescription(e.target.value)}
@@ -624,8 +626,8 @@ const EventForm: React.FC<EventFormProps> = ({
                           sx: {
                             '.MuiPickersPopper-paper': { minWidth: 360 },
                             '.MuiPickersCalendarHeader-label': { minWidth: 140 },
-                            '.MuiPickersArrowSwitcher-root': { 
-                              display: 'flex', 
+                            '.MuiPickersArrowSwitcher-root': {
+                              display: 'flex',
                               justifyContent: 'flex-end',
                               '& .MuiButtonBase-root': {
                                 padding: '4px',
@@ -655,8 +657,8 @@ const EventForm: React.FC<EventFormProps> = ({
                                 }
                               },
                               endAdornment: (
-                                <Box sx={{ 
-                                  display: 'flex', 
+                                <Box sx={{
+                                  display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'flex-end',
                                   gap: '2px',
@@ -664,7 +666,7 @@ const EventForm: React.FC<EventFormProps> = ({
                                   minWidth: 'auto'
                                 }}>
                                   {dateStart && mode !== 'moderate' && (
-                                    <IconButton 
+                                    <IconButton
                                       size="small"
                                       onClick={handleClearDate(setDateStart)}
                                     >
@@ -690,8 +692,8 @@ const EventForm: React.FC<EventFormProps> = ({
                           sx: {
                             '.MuiPickersPopper-paper': { minWidth: 360 },
                             '.MuiPickersCalendarHeader-label': { minWidth: 140 },
-                            '.MuiPickersArrowSwitcher-root': { 
-                              display: 'flex', 
+                            '.MuiPickersArrowSwitcher-root': {
+                              display: 'flex',
                               justifyContent: 'flex-end',
                               '& .MuiButtonBase-root': {
                                 padding: '4px',
@@ -721,8 +723,8 @@ const EventForm: React.FC<EventFormProps> = ({
                                 }
                               },
                               endAdornment: (
-                                <Box sx={{ 
-                                  display: 'flex', 
+                                <Box sx={{
+                                  display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'flex-end',
                                   gap: '2px',
@@ -730,7 +732,7 @@ const EventForm: React.FC<EventFormProps> = ({
                                   minWidth: 'auto'
                                 }}>
                                   {dateEnd && mode !== 'moderate' && (
-                                    <IconButton 
+                                    <IconButton
                                       size="small"
                                       onClick={handleClearDate(setDateEnd)}
                                     >
@@ -762,8 +764,8 @@ const EventForm: React.FC<EventFormProps> = ({
                           sx: {
                             '.MuiPickersPopper-paper': { minWidth: 360 },
                             '.MuiPickersCalendarHeader-label': { minWidth: 140 },
-                            '.MuiPickersArrowSwitcher-root': { 
-                              display: 'flex', 
+                            '.MuiPickersArrowSwitcher-root': {
+                              display: 'flex',
                               justifyContent: 'flex-end',
                               '& .MuiButtonBase-root': {
                                 padding: '4px',
@@ -792,8 +794,8 @@ const EventForm: React.FC<EventFormProps> = ({
                                 }
                               },
                               endAdornment: (
-                                <Box sx={{ 
-                                  display: 'flex', 
+                                <Box sx={{
+                                  display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'flex-end',
                                   gap: '2px',
@@ -801,7 +803,7 @@ const EventForm: React.FC<EventFormProps> = ({
                                   minWidth: 'auto'
                                 }}>
                                   {applicationStart && mode !== 'moderate' && (
-                                    <IconButton 
+                                    <IconButton
                                       size="small"
                                       onClick={handleClearDate(setApplicationStart)}
                                     >
@@ -829,8 +831,8 @@ const EventForm: React.FC<EventFormProps> = ({
                           sx: {
                             '.MuiPickersPopper-paper': { minWidth: 360 },
                             '.MuiPickersCalendarHeader-label': { minWidth: 140 },
-                            '.MuiPickersArrowSwitcher-root': { 
-                              display: 'flex', 
+                            '.MuiPickersArrowSwitcher-root': {
+                              display: 'flex',
                               justifyContent: 'flex-end',
                               '& .MuiButtonBase-root': {
                                 padding: '4px',
@@ -859,8 +861,8 @@ const EventForm: React.FC<EventFormProps> = ({
                                 }
                               },
                               endAdornment: (
-                                <Box sx={{ 
-                                  display: 'flex', 
+                                <Box sx={{
+                                  display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'flex-end',
                                   gap: '2px',
@@ -868,7 +870,7 @@ const EventForm: React.FC<EventFormProps> = ({
                                   minWidth: 'auto'
                                 }}>
                                   {applicationEnd && mode !== 'moderate' && (
-                                    <IconButton 
+                                    <IconButton
                                       size="small"
                                       onClick={handleClearDate(setApplicationEnd)}
                                     >
@@ -894,6 +896,7 @@ const EventForm: React.FC<EventFormProps> = ({
                     inputValue={addressInput}
                     onInputChange={(event, newValue) => {
                       console.log('Autocomplete onInputChange triggered with value:', newValue);
+                      setLocation(newValue || '');
                       handleAddressInputChange(event, newValue);
                     }}
                     onChange={(event, value) => {
@@ -908,8 +911,8 @@ const EventForm: React.FC<EventFormProps> = ({
                         fullWidth
                         required
                         disabled={mode === 'moderate' as any}
-                        error={wasSubmitted && !addressInput.trim()}
-                        helperText={wasSubmitted && !addressInput.trim() ? t('required_field') : ''}
+                        error={wasSubmitted && !location.trim()}
+                        helperText={wasSubmitted && !location.trim() ? t('required_field') : ''}
                         InputProps={{
                           ...params.InputProps,
                           endAdornment: (
@@ -924,7 +927,7 @@ const EventForm: React.FC<EventFormProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} sx={{ width: '100%' }}>
-                  <TextField 
+                  <TextField
                     label={t('theme')}
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
@@ -1013,7 +1016,7 @@ const EventForm: React.FC<EventFormProps> = ({
                               </Select>
                             </FormControl>
                         </Grid>
-                          
+
                           {/* 2 ряд: Описание */}
                         <Grid item xs={12}>
                           <TextField
@@ -1028,10 +1031,10 @@ const EventForm: React.FC<EventFormProps> = ({
                             required
                             disabled={mode === 'moderate' as any}
                             error={wasSubmitted && !doc.description.trim()}
-                            helperText={wasSubmitted && !doc.description.trim() ? t('required_field') : ''}
+                              helperText={documentsRequired.length > 0 && wasSubmitted && !doc.description.trim() ? t('required_field') : ''}
                           />
                         </Grid>
-                          
+
                           {/* 3 ряд: Чекбокс "Обязательно" и кнопка удаления */}
                           <Grid item xs={8} sx={{ display: 'flex', alignItems: 'center' }}>
                           <FormControlLabel
@@ -1067,12 +1070,12 @@ const EventForm: React.FC<EventFormProps> = ({
                       </Grid>
                     </Paper>
                   ))}
-                    {(mode !== 'moderate' as any && <Button 
-                      startIcon={<Add />} 
-                      onClick={handleAddDocument} 
-                      sx={{ mt: 1 }} 
-                      color="primary" 
-                      variant="outlined" 
+                    {(mode !== 'moderate' as any && <Button
+                      startIcon={<Add />}
+                      onClick={handleAddDocument}
+                      sx={{ mt: 1 }}
+                      color="primary"
+                      variant="outlined"
                       fullWidth
                     >
                       {t('add_document')}
@@ -1129,11 +1132,11 @@ const EventForm: React.FC<EventFormProps> = ({
                               />
                             </Button>
                             {mat.file && (
-                              <Typography 
-                                variant="body2" 
-                                sx={{ 
-                                  ml: 2, 
-                                  maxWidth: 'calc(100% - 150px)', 
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  ml: 2,
+                                  maxWidth: 'calc(100% - 150px)',
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   whiteSpace: 'nowrap'
