@@ -3,8 +3,9 @@ import SockJS from 'sockjs-client';
 import { getToken, getUsername } from './auth'; // Используем getUsername
 import { ChatMessageResponse, ChatMessageRequest } from '../models/Models'; // Обновленный импорт
 
-const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8080/ws/chat';
-// const WEBSOCKET_URL = 'ws://localhost:8080/ws/chat'; // Hardcoded for simplicity if .env is not set up
+const protocol = window.location.protocol === 'https:' ? 'https' : 'http';
+const host = window.location.host;
+const WEBSOCKET_URL = `${protocol}://${host}/ws/chat`;
 
 class WebSocketService {
   private client: Client | null = null;
