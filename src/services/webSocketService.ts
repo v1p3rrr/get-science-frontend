@@ -25,7 +25,7 @@ class WebSocketService {
   private createClient(): Client {
     console.log('[WS createClient] Creating new STOMP client instance.');
     return new Client({
-      webSocketFactory: () => new SockJS(WEBSOCKET_URL.replace('ws:', 'http:').replace('wss:', 'https:')),
+        webSocketFactory: () => new SockJS('/ws/chat'),
       // Используем http/https для SockJS, он сам проапгрейдит до ws/wss
       // brokerURL: WEBSOCKET_URL, // If native WebSocket
       connectHeaders: {
