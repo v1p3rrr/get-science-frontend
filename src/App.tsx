@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 'react-router-dom';
 import EventList from './components/events/list/EventList';
 import EventDetails from './components/events/details/EventDetails';
 import Header from './components/common/Header';
@@ -40,6 +40,7 @@ const RootBox = styled(Box)({
     minHeight: '100vh',
     width: '100%',
     position: 'relative',
+    overflow: 'visible'
 });
 
 const MainContent = styled(Box, {
@@ -50,10 +51,11 @@ const MainContent = styled(Box, {
     backgroundColor: theme.palette.background.default,
     position: 'relative',
     width: isMobile ? '100%' : `calc(100% - ${drawerWidth}px)`,
-    marginLeft: 0,//isMobile ? 0 : `${drawerWidth}px`,
+    marginLeft: 0,
     minHeight: `calc(100vh - ${headerHeight}px)`,
     padding: theme.spacing(2, 2, 2, 2),
     boxSizing: 'border-box',
+    overflow: 'visible',
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -65,6 +67,7 @@ const ContentWrapper = styled(Box)({
     maxWidth: '100%',
     height: '100%',
     boxSizing: 'border-box',
+    overflow: 'visible'
 });
 
 const App: React.FC = () => {
@@ -73,10 +76,47 @@ const App: React.FC = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [mobileOpen, setMobileOpen] = useState(false);
+    const reactRouterLocation = useLocation();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    // Обработчик для предотвращения блокировки скролла на мобильных устройствах
+    useEffect(() => {
+        const handleTouchStart = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('.MuiDrawer-root')) {
+                e.stopPropagation();
+            }
+        };
+
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        return () => {
+            document.removeEventListener('touchstart', handleTouchStart);
+        };
+    }, []);
+
+    // Улучшенный useEffect для сброса overflow на body
+    useEffect(() => {
+        const muiModalClasses = ['.MuiDialog-root', '.MuiDrawer-root', '.MuiModal-root'];
+        const activeModals = muiModalClasses.some(selector => {
+            const elements = document.querySelectorAll(selector);
+            return Array.from(elements).some(modalEl => {
+                const style = window.getComputedStyle(modalEl);
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && parseInt(style.zIndex, 10) > 100;
+            });
+        });
+
+        if (!activeModals && document.body.style.overflow === 'hidden') {
+            document.body.style.overflow = 'auto';
+            if (document.body.style.paddingRight) {
+                document.body.style.paddingRight = '';
+            }
+        } else if (activeModals) {
+        } else {
+        }
+    }, [reactRouterLocation.pathname]);
 
     useEffect(() => {
         const initApp = async () => {
@@ -91,56 +131,61 @@ const App: React.FC = () => {
         <ThemeProvider>
             <CssBaseline />
             <I18nextProvider i18n={i18n}>
-                <Router>
-                    <RootBox>
-                        <Header handleDrawerToggle={handleDrawerToggle} />
-                        <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
-                        <MainContent isMobile={isMobile}>
-                            <ContentWrapper>
-                                <Routes>
-                                    {isModerator ? (
-                                        <Route path="/events" element={<Navigate replace to="/moderation/pending" />} />
-                                    ) : (
-                                        <Route path="/events" element={<EventList />} />
-                                    )}
-                                    <Route path="/events/:eventId" element={<EventDetails/>}/>
-                                    <Route path="/my-profile" element={<ProtectedRoute><MyProfile/></ProtectedRoute>} />
-                                    <Route path="/profile/:profileId" element={<PublicProfile/>} />
-                                    <Route path="/my-events" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><MyEvents/></ProtectedRoute>} />
-                                    <Route path="/events/:eventId/edit" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><EditEventPage /></ProtectedRoute>} />
-                                    <Route path="/create-event" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><EventForm mode="create" onSave={() => {}} /></ProtectedRoute>} />
-                                    <Route path="/notifications" element={<ProtectedRoute><NotificationList/></ProtectedRoute>} />
-                                    <Route path="/my-applications" element={<ProtectedRoute requiredRoles={['USER']}><MyApplications /></ProtectedRoute>} />
-                                    <Route path="/applications/:applicationId" element={<ProtectedRoute><ApplicationDetails /></ProtectedRoute>} />
-                                    <Route path="/applications/:applicationId/edit" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
-                                    <Route path="/applications/:applicationId/review" element={<ProtectedRoute><ReviewApplication /></ProtectedRoute>} />
-                                    <Route path="/register" element={<ProtectedRoute onlyIfUnauthenticated><Register/></ProtectedRoute>}/>
-                                    <Route path="/login" element={<ProtectedRoute onlyIfUnauthenticated><Login/></ProtectedRoute>}/>
-                                    <Route path="/forgot-password" element={<ProtectedRoute onlyIfUnauthenticated><ForgotPassword/></ProtectedRoute>}/>
-                                    <Route path="/reset-password" element={<ResetPassword/>}/>
-                                    <Route path="/verify-email" element={<VerifyEmail/>}/>
-                                    <Route path="/organizer-applications" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><OrganizerApplications /></ProtectedRoute>} />
-                                    <Route path="/events/:eventId/apply" element={<ProtectedRoute requiredRoles={['USER']}><ApplicationForm /></ProtectedRoute>} />
-                                    <Route path="/moderation/pending" element={<ProtectedRoute requiredRoles={['MODERATOR']}><ModerationEventList status="pending" /></ProtectedRoute>} />
-                                    <Route path="/moderation/approved" element={<ProtectedRoute requiredRoles={['MODERATOR']}><ModerationEventList status="approved" /></ProtectedRoute>} />
-                                    <Route path="/events/:eventId/moderate" element={<ProtectedRoute requiredRoles={['MODERATOR']}><EditEventPage mode="moderate" /></ProtectedRoute>} />
-                                    <Route path="/chats" element={<ProtectedRoute><ChatListPage /></ProtectedRoute>} />
-                                    <Route path="/chats/:chatId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-                                    <Route path="/events/:eventId/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-                                    <Route path="*" element={<NotFound/>}/>
-                                    {isModerator ? (
-                                        <Route path="/" element={<Navigate replace to="/moderation/pending" />} />
-                                    ) : (
-                                        <Route path="/" element={<Navigate replace to="/events" />} />
-                                    )}
-                                </Routes>
-                            </ContentWrapper>
-                        </MainContent>
-                    </RootBox>
-                </Router>
+                <RootBox>
+                    <Header handleDrawerToggle={handleDrawerToggle} />
+                    <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
+                    <MainContent isMobile={isMobile}>
+                        <ContentWrapper>
+                            <Routes>
+                                {isModerator ? (
+                                    <Route path="/events" element={<Navigate replace to="/moderation/pending" />} />
+                                ) : (
+                                    <Route path="/events" element={<EventList />} />
+                                )}
+                                <Route path="/events/:eventId" element={<EventDetails/>}/>
+                                <Route path="/my-profile" element={<ProtectedRoute><MyProfile/></ProtectedRoute>} />
+                                <Route path="/profile/:profileId" element={<PublicProfile/>} />
+                                <Route path="/my-events" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><MyEvents/></ProtectedRoute>} />
+                                <Route path="/events/:eventId/edit" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><EditEventPage /></ProtectedRoute>} />
+                                <Route path="/create-event" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><EventForm mode="create" onSave={() => {}} /></ProtectedRoute>} />
+                                <Route path="/notifications" element={<ProtectedRoute><NotificationList/></ProtectedRoute>} />
+                                <Route path="/my-applications" element={<ProtectedRoute requiredRoles={['USER']}><MyApplications /></ProtectedRoute>} />
+                                <Route path="/applications/:applicationId" element={<ProtectedRoute><ApplicationDetails /></ProtectedRoute>} />
+                                <Route path="/applications/:applicationId/edit" element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>} />
+                                <Route path="/applications/:applicationId/review" element={<ProtectedRoute><ReviewApplication /></ProtectedRoute>} />
+                                <Route path="/register" element={<ProtectedRoute onlyIfUnauthenticated><Register/></ProtectedRoute>}/>
+                                <Route path="/login" element={<ProtectedRoute onlyIfUnauthenticated><Login/></ProtectedRoute>}/>
+                                <Route path="/forgot-password" element={<ProtectedRoute onlyIfUnauthenticated><ForgotPassword/></ProtectedRoute>}/>
+                                <Route path="/reset-password" element={<ResetPassword/>}/>
+                                <Route path="/verify-email" element={<VerifyEmail/>}/>
+                                <Route path="/organizer-applications" element={<ProtectedRoute requiredRoles={['ORGANIZER']}><OrganizerApplications /></ProtectedRoute>} />
+                                <Route path="/events/:eventId/apply" element={<ProtectedRoute requiredRoles={['USER']}><ApplicationForm /></ProtectedRoute>} />
+                                <Route path="/moderation/pending" element={<ProtectedRoute requiredRoles={['MODERATOR']}><ModerationEventList status="pending" /></ProtectedRoute>} />
+                                <Route path="/moderation/approved" element={<ProtectedRoute requiredRoles={['MODERATOR']}><ModerationEventList status="approved" /></ProtectedRoute>} />
+                                <Route path="/events/:eventId/moderate" element={<ProtectedRoute requiredRoles={['MODERATOR']}><EditEventPage mode="moderate" /></ProtectedRoute>} />
+                                <Route path="/chats" element={<ProtectedRoute><ChatListPage /></ProtectedRoute>} />
+                                <Route path="/chats/:chatId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                                <Route path="/events/:eventId/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                                <Route path="*" element={<NotFound/>}/>
+                                {isModerator ? (
+                                    <Route path="/" element={<Navigate replace to="/moderation/pending" />} />
+                                ) : (
+                                    <Route path="/" element={<Navigate replace to="/events" />} />
+                                )}
+                            </Routes>
+                        </ContentWrapper>
+                    </MainContent>
+                </RootBox>
             </I18nextProvider>
         </ThemeProvider>
     );
 };
 
-export default App;
+// Обертка для App, чтобы useLocation работал, так как он должен быть внутри Router
+const AppWrapper: React.FC = () => (
+    <Router>
+        <App />
+    </Router>
+);
+
+export default AppWrapper;

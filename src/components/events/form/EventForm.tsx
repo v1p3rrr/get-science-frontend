@@ -1146,7 +1146,7 @@ const EventForm: React.FC<EventFormProps> = ({
                                 {truncateFilename(mat.file.name)}
                               </Typography>
                             )}
-                            {wasSubmitted && !mat.file && (
+                            {wasSubmitted && !mat.file && !mat.fileId && (
                               <Typography variant="body2" color="error" sx={{ ml: 2 }}>
                                 {t('required_field')}
                               </Typography>
