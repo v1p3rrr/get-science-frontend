@@ -1,7 +1,7 @@
 import axiosInstance from '../util/axiosInstance';
 import {ApplicationRequest, ApplicationResponse} from '../models/Models';
 
-const FILE_API_URL = 'http://localhost:8080/api/v1/files';
+const FILE_API_URL = '/files';
 
 // Интерфейс для метаданных файла
 interface ApplicationFileMetadataDTO {
